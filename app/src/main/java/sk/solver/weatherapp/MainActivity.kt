@@ -3,6 +3,8 @@ package sk.solver.weatherapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils.concat
+import android.text.TextUtils.split
 import android.view.KeyEvent
 import android.widget.Toast
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,9 +30,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadCity() {
+        val cities = split(binding.cityEditor.text.toString(),"/")
+        cities.forEachIndexed {id,str -> System.out.println("****** $id")
         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
-                binding.cityEditor.text.toString(),
+//                binding.cityEditor.text.toString(),
+                 str,
                 "metric",
                 WeatherClientBuilder.WEATHER_APP_ID
             ).observeOn(AndroidSchedulers.mainThread())
@@ -42,9 +47,9 @@ class MainActivity : AppCompatActivity() {
                 objectMapper.writeValueAsString(weatherResponse)
                 binding.city.text = weatherResponse.name
                 binding.cloud.text = weatherResponse.weather.get(0).main
-                binding.temp.text = weatherResponse.main?.temp.toString()
+                binding.temp.text = weatherResponse.main?.temp.toString() +" °C"
                 binding.pressure.text = weatherResponse.main?.pressure.toString()
-                binding.humidity.text = weatherResponse.main?.humidity.toString()
+                binding.humidity.text = weatherResponse.main?.humidity.toString() + " %"
             }) { throwable: Throwable ->
                 Toast.makeText(
                     this,
@@ -53,5 +58,6 @@ class MainActivity : AppCompatActivity() {
                 ).show()
                 System.out.println(throwable.message)
             }
+        }
     }
 }
