@@ -18,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -98,6 +97,10 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+<androidx.recyclerview.widget.RecyclerView
+    android:layout_width = "match_parent"
+    android:layout_height = "wrap_content"
+    android:id = "@+id/recyclerView"/>
 
 
 

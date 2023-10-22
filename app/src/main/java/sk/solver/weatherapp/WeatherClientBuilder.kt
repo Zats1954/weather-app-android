@@ -1,7 +1,6 @@
 package sk.solver.weatherapp
 
 import retrofit2.Retrofit
-import sk.solver.weatherapp.WeatherClientBuilder
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.OkHttpClient
 import com.fasterxml.jackson.databind.ObjectMapper
