@@ -14,10 +14,11 @@
         app:layout_constraintTop_toTopOf="parent"/>
     <TextView
         android:id="@+id/cloud"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_weight="1"
-        android:text="@string/cloud"
+        android:text="Sky"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/city"/>
 
@@ -25,7 +26,7 @@
         android:id="@+id/labelTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:text="Temperature"
         app:layout_constraintStart_toEndOf="@+id/cloud"
         app:layout_constraintTop_toTopOf="@+id/cloud"/>
@@ -44,7 +45,7 @@
         android:id="@+id/labelPressure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:text="Pressure"
         app:layout_constraintTop_toTopOf="@id/labelTemp"
         app:layout_constraintStart_toEndOf="@id/labelTemp"/>
@@ -62,7 +63,7 @@
         android:id="@+id/labelHumidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:text="Humidity"
         app:layout_constraintTop_toTopOf="@id/labelPressure"
         app:layout_constraintStart_toEndOf="@id/labelPressure"/>

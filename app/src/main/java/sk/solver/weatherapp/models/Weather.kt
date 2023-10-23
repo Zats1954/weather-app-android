@@ -1,8 +1,8 @@
 package sk.solver.weatherapp.models
 
 data class Weather (
-    val id: Int = 0,
-    val main: String?=null,
-    val description: String? =null,
-    val icon: String? =null
+    var id: Int = 0,
+    var main: String?=null,
+    var description: String? =null,
+    var icon: String? =null
 )

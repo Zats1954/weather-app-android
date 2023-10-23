@@ -16,10 +16,10 @@ class AdapterClass(private val dataList:  List<WeatherResponse>): RecyclerView.A
     override fun onBindViewHolder(holder: ViewHolderClass, position: Int) {
         val currentItem = dataList[position]
         holder.rvCity.text = currentItem.name
-        holder.rvCloud.text = currentItem.weather.get(0).main
-        holder.rvTemperature.text = currentItem.main?.temp.toString()
+        holder.rvCloud.text = currentItem.weather.get(0).description
+        holder.rvTemperature.text = currentItem.main?.temp.toString() +" °C"
         holder.rvPressure.text = currentItem.main?.pressure.toString()
-        holder.rvHumidity.text = currentItem.main?.humidity.toString()
+        holder.rvHumidity.text = currentItem.main?.humidity.toString() + "%"
     }
 
     override fun getItemCount(): Int {

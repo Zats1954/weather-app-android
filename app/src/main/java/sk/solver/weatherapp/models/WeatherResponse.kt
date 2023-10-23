@@ -1,17 +1,17 @@
 package sk.solver.weatherapp.models
 
 data class WeatherResponse(
-    val coord: Coord?  =null,
-    val weather: List<Weather> = emptyList(),
-    val base: String?  =null,
-    val main: Main? = null,
-    val visibility: Int = 0,
-    val wind: Wind?  =null,
-    val clouds: Clouds?  =null,
-    val dt: Int = 0,
-    val sys: Sys?  =null,
-    val timezone: Int = 0,
-    val id: Int = 0,
-    val name: String?  =null,
-    val cod: Int = 0
+    var coord: Coord?  =null,
+    var weather: List<Weather> = emptyList(),
+    var base: String?  =null,
+    var main: Main? = null,
+    var visibility: Int = 0,
+    var wind: Wind?  =null,
+    var clouds: Clouds?  =null,
+    var dt: Int = 0,
+    var sys: Sys?  =null,
+    var timezone: Int = 0,
+    var id: Int = 0,
+    var name: String?  =null,
+    var cod: Int = 0
 )

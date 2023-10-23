@@ -1,41 +1,49 @@
 package sk.solver.weatherapp
 
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils.split
 import android.view.KeyEvent
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.*
 import sk.solver.weatherapp.databinding.ActivityMainBinding
 import sk.solver.weatherapp.models.WeatherResponse
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var recyclerView : RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private lateinit var citiesList: List<String>
-    private lateinit var resultList: List<WeatherResponse>
-    var listWeather : MutableList<WeatherResponse> = mutableListOf()
+    private var resultList: MutableList<WeatherResponse> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        resultList = emptyList()
-
-
-        binding.cityEditor.setOnKeyListener { _, keyCode: Int, _ ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+        binding.cityEditor.setOnKeyListener { par0, keyCode: Int, par ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && par.action == KeyEvent.ACTION_UP) {
+                resultList = mutableListOf()
                 citiesList = loadCities()
-                citiesList.forEach { city ->
-                    listWeather.add(loadCity(city))
-                    System.out.println("********************* resultList.size  ${resultList.size}")
+                GlobalScope.launch {
+                    val job = CoroutineScope(Dispatchers.Default).launch {
+                        citiesList.forEach { city ->
+                            val valueDeferred = async { loadCity(city) }
+                            delay(1500)
+                            valueDeferred.await()
+                        }
+                    }
+                    job.join()
+                    withContext(Dispatchers.Main) {
+                        recyclerView.adapter = AdapterClass(resultList)
+                    }
                 }
             }
             false
@@ -44,44 +52,40 @@ class MainActivity : AppCompatActivity() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = AdapterClass(resultList)
+        recyclerView.addItemDecoration(RecyclerViewItemDecoration(this, R.drawable.divider))
+
     }
 
     private fun loadCities(): List<String> {
-        return split(binding.cityEditor.text.toString(),"/").asList()
-//        cities.forEachIndexed {id,str -> System.out.println("****** $id")
+        return split(binding.cityEditor.text.toString(), "/").asList()
     }
 
-    private fun loadCity(city:  String ):  WeatherResponse  {
-        var returnWeather = WeatherResponse()
+
+    private fun loadCity(city: String) {
         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
-//                binding.cityEditor.text.toString(),
-                 city,
+                      city,
                 "metric",
-                WeatherClientBuilder.WEATHER_APP_ID
-            ).observeOn(AndroidSchedulers.mainThread())
+                      WeatherClientBuilder.WEATHER_APP_ID
+            ).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
-                Toast.makeText(this, "Finished", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Finished $city", Toast.LENGTH_LONG).show()
                 val objectMapper = ObjectMapper()
                 objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
-//                binding.output.text =
-                objectMapper.writeValueAsString(weatherResponse)
-//                binding.city.text = weatherResponse.name
-//                binding.cloud.text = weatherResponse.weather.get(0).main?.toString()
-//                binding.temp.text = weatherResponse.main?.temp.toString() +" °C"
-//                binding.pressure.text = weatherResponse.main?.pressure.toString()
-//                binding.humidity.text = weatherResponse.main?.humidity.toString() + " %"
-//                returnWeather = weatherResponse
-            }) { throwable: Throwable ->
+                resultList.add(weatherResponse)
+            }, { throwable: Throwable ->
+                val message =
+                    if (throwable.message!!.contains("HTTP 404", true))
+                        "Unknown city $city"
+                    else
+                        "Unexpected error: " + throwable.message
                 Toast.makeText(
                     this,
-                    "Unexpected error: " + throwable.message,
+                    message,
                     Toast.LENGTH_LONG
                 ).show()
                 System.out.println(throwable.message)
-            }
-           return returnWeather
-
+            })
     }
 }
