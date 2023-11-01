@@ -1,6 +1,7 @@
 package sk.solver.weatherapp
 
 
+import android.app.Application
 import android.os.Bundle
 import android.text.TextUtils.split
 import android.view.KeyEvent
@@ -20,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerView: RecyclerView
-    private lateinit var citiesList: List<String>
     private var resultList: MutableList<WeatherResponse> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding.cityEditor.setOnKeyListener { par0, keyCode: Int, par ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && par.action == KeyEvent.ACTION_UP) {
                 resultList = mutableListOf()
-                citiesList = loadCities()
+                val citiesList = loadCities()
                 GlobalScope.launch {
                     val job = CoroutineScope(Dispatchers.Default).launch {
                         citiesList.forEach { city ->
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     job.join()
                     withContext(Dispatchers.Main) {
-                        recyclerView.adapter = AdapterClass(resultList)
+                        recyclerView.adapter = CitiesAdapter(resultList, applicationContext)
                     }
                 }
             }
@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(true)
         recyclerView.addItemDecoration(RecyclerViewItemDecoration(this, R.drawable.divider))
 
+
     }
 
     private fun loadCities(): List<String> {
@@ -64,9 +65,9 @@ class MainActivity : AppCompatActivity() {
     private fun loadCity(city: String) {
         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
-                      city,
+                city,
                 "metric",
-                      WeatherClientBuilder.WEATHER_APP_ID
+                WeatherClientBuilder.WEATHER_APP_ID
             ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
@@ -88,4 +89,6 @@ class MainActivity : AppCompatActivity() {
                 System.out.println(throwable.message)
             })
     }
+
+
 }
