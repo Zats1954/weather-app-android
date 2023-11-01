@@ -1,12 +1,12 @@
 package sk.solver.weatherapp
 
 
-import android.app.Application
 import android.os.Bundle
 import android.text.TextUtils.split
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -16,6 +16,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import sk.solver.weatherapp.databinding.ActivityMainBinding
 import sk.solver.weatherapp.models.WeatherResponse
+import java.sql.Time
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,18 +33,18 @@ class MainActivity : AppCompatActivity() {
         binding.cityEditor.setOnKeyListener { par0, keyCode: Int, par ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && par.action == KeyEvent.ACTION_UP) {
                 resultList = mutableListOf()
+                recyclerView.adapter = CitiesAdapter(resultList, applicationContext)
                 val citiesList = loadCities()
-                GlobalScope.launch {
-                    val job = CoroutineScope(Dispatchers.Default).launch {
-                        citiesList.forEach { city ->
-                            val valueDeferred = async { loadCity(city) }
-                            delay(1500)
-                            valueDeferred.await()
-                        }
+                lifecycleScope.launch {
+                    citiesList.forEachIndexed {ind, city ->
+ /** ind for test! **/
+                        val valueDeferred = async { loadCity(city, ind) }
+                        delay(1500)
+                        valueDeferred.await()
+
                     }
-                    job.join()
                     withContext(Dispatchers.Main) {
-                        recyclerView.adapter = CitiesAdapter(resultList, applicationContext)
+                        recyclerView.adapter?.notifyDataSetChanged()
                     }
                 }
             }
@@ -61,14 +63,16 @@ class MainActivity : AppCompatActivity() {
         return split(binding.cityEditor.text.toString(), "/").asList()
     }
 
-
-    private fun loadCity(city: String) {
-        WeatherClientBuilder.create(WeatherClient::class.java)
+    private fun loadCity(city: String, ind: Int)  {
+/** ind for test! **/ val del = if(ind == 0) 1500L else 0L
+         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
                 city,
                 "metric",
                 WeatherClientBuilder.WEATHER_APP_ID
-            ).subscribeOn(Schedulers.io())
+            )
+/** for test! **/ .delay( del ,TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
                 Toast.makeText(this, "Finished $city", Toast.LENGTH_LONG).show()
