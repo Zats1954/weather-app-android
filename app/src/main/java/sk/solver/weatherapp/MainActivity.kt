@@ -16,7 +16,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import sk.solver.weatherapp.databinding.ActivityMainBinding
 import sk.solver.weatherapp.models.WeatherResponse
-import java.sql.Time
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -71,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 "metric",
                 WeatherClientBuilder.WEATHER_APP_ID
             )
-/** for test! **/ .delay( del ,TimeUnit.MILLISECONDS)
+/** for test! **/ .delay( del , TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
