@@ -16,8 +16,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import sk.solver.weatherapp.databinding.ActivityMainBinding
 import sk.solver.weatherapp.models.WeatherResponse
-import java.sql.Time
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
