@@ -12,8 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
@@ -30,45 +28,46 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private var resultList: MutableList<WeatherResponse> = mutableListOf()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.cityEditor.setOnKeyListener { par0, keyCode: Int, par ->
+
+        recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.addItemDecoration(RecyclerViewItemDecoration(this, R.drawable.divider))
+
+        binding.cityEditor.setOnKeyListener { _, keyCode: Int, par ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && par.action == KeyEvent.ACTION_UP) {
                 resultList = mutableListOf()
                 recyclerView.adapter = CitiesAdapter(resultList, applicationContext)
                 val citiesList = loadCities()
                 lifecycleScope.launch {
                     citiesList.forEachIndexed { ind, city ->
-                        /** ind for test! **/
+         /** ind for test! **/
                         launch {
-                            loadCity(city, ind).await()
+                            resultList.add(loadCity(city, ind).await())
                             withContext(Dispatchers.Main) {
                                 recyclerView.adapter?.notifyDataSetChanged()
                             }
                         }
                     }
-
                 }
             }
             false
         }
-
-        recyclerView = binding.recyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.addItemDecoration(RecyclerViewItemDecoration(this, R.drawable.divider))
     }
 
     private fun loadCities(): List<String> {
-        return split(binding.cityEditor.text.toString(), "/").asList()
+        return split(binding.cityEditor.text.toString(), ",").asList()
     }
 
-    private fun loadCity(city: String, ind: Int): LiveData<Boolean> {
+    private fun loadCity(city: String, ind: Int): LiveData<WeatherResponse> {
         /** ind for test! **/
-        val del = if (ind == 0) 2000L else 0L
-        val resultLivedata = MutableLiveData<Boolean>()
+/** **/ val del = if (ind == 0) 2000L else 0L
+        val resultLivedata = MutableLiveData<WeatherResponse>()
         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
                 city,
@@ -76,22 +75,19 @@ class MainActivity : AppCompatActivity() {
                 WeatherClientBuilder.WEATHER_APP_ID
             )
             /** for test! **/
-            .delay(del, TimeUnit.MILLISECONDS)
+/** **/     .delay(del, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
                 Toast.makeText(this, "Finished $city", Toast.LENGTH_LONG).show()
-                val objectMapper = ObjectMapper()
-                objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
-                resultList.add(weatherResponse)
-                resultLivedata.value = true
+                resultLivedata.value = weatherResponse
             }, { throwable: Throwable ->
-                val message =
+                 val message =
                     if (throwable.message!!.contains("HTTP 404", true))
                         "Unknown city $city"
                     else
                         "Unexpected error: " + throwable.message
-                Toast.makeText(
+                 Toast.makeText(
                     this,
                     message,
                     Toast.LENGTH_LONG
@@ -103,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     suspend fun <T> LiveData<T>.await(): T {
         return withContext(Dispatchers.Main.immediate) {
-            suspendCancellableCoroutine { continuation ->
+            suspendCancellableCoroutine {continuation ->
                 val observer = object : Observer<T> {
                     override fun onChanged(value: T) {
                         removeObserver(this)
@@ -117,6 +113,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-
 }
