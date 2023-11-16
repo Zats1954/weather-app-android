@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/labelCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="City"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:layout_marginTop="20dp"
+        android:text="---"
+        app:layout_constraintStart_toEndOf="@+id/labelCity"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <TextView
+        android:id="@+id/labelTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Local time"
+        app:layout_constraintEnd_toStartOf="@+id/localTime"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/localTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:text=" "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/cloud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:text="Sky"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/city" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/cloud"
+        app:layout_constraintEnd_toEndOf="@+id/cloud"
+        app:layout_constraintTop_toBottomOf="@id/cloud"
+         />
+
+
+    <TextView
+        android:id="@+id/labelWind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wind"
+        app:layout_constraintBottom_toBottomOf="@+id/cloud"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cloud"
+        app:layout_constraintTop_toTopOf="@+id/cloud" />
+
+    <TextView
+        android:id="@+id/wind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text=" "
+        app:layout_constraintStart_toStartOf="@+id/labelWind"
+        app:layout_constraintEnd_toStartOf="@+id/windSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/labelWind"/>
+
+    <TextView
+        android:id="@+id/windSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text=" "
+        app:layout_constraintStart_toEndOf="@+id/wind"
+        app:layout_constraintEnd_toEndOf="@+id/labelWind"
+        app:layout_constraintTop_toBottomOf="@+id/labelWind"/>
+
+    <TextView
+        android:id="@+id/labelTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop ="20dp"
+        android:layout_marginBottom ="20dp"
+        android:text="Temperature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+         />
+
+
+    <TextView
+        android:id="@+id/temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:text="00.00"
+        app:layout_constraintEnd_toEndOf="@+id/labelTemp"
+        app:layout_constraintStart_toStartOf="@id/labelTemp"
+        app:layout_constraintTop_toBottomOf="@id/labelTemp" />
+
+    <TextView
+        android:id="@+id/labelPressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Pressure"
+        app:layout_constraintStart_toEndOf="@id/labelTemp"
+        app:layout_constraintTop_toTopOf="@id/labelTemp" />
+
+    <TextView
+        android:id="@+id/pressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0000"
+        app:layout_constraintEnd_toEndOf="@+id/labelPressure"
+        app:layout_constraintStart_toStartOf="@id/labelPressure"
+        app:layout_constraintTop_toBottomOf="@id/labelPressure" />
+
+    <TextView
+        android:id="@+id/labelHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Humidity"
+        app:layout_constraintStart_toEndOf="@id/labelPressure"
+        app:layout_constraintTop_toTopOf="@id/labelPressure" />
+
+    <TextView
+        android:id="@+id/humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00.00"
+        app:layout_constraintEnd_toEndOf="@+id/labelHumidity"
+        app:layout_constraintStart_toStartOf="@id/labelHumidity"
+        app:layout_constraintTop_toBottomOf="@id/labelHumidity" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temp"
+        app:layout_constraintBottom_toBottomOf="parent"
+ />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,7 @@ object WeatherClientBuilder {
     private const val WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/"
     const val WEATHER_APP_ID = "f00c38e0279b7bc85480c3fe775d518c"
     private var instance: Retrofit? = null
-    val builderInstance: Retrofit?
+    private val builderInstance: Retrofit?
         get() {
             if (instance != null) {
                 return instance
@@ -27,7 +27,7 @@ object WeatherClientBuilder {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .callTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-//                .addInterceptor(interceptor)
+                .addInterceptor(interceptor)
                 .build()
             val objectMapper = ObjectMapper()
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

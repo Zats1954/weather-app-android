@@ -11,8 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import sk.solver.weatherapp.models.WeatherResponse
 
+interface OnInteractionListener {
+    fun showCity(weatherResponse:WeatherResponse) {}
+}
 
 class CitiesAdapter(
+    private val onInteractionListener: OnInteractionListener,
     private val dataList: List<WeatherResponse>,
     private val context: Context
 ) : RecyclerView.Adapter<CitiesAdapter.ViewHolderClass>() {
@@ -20,7 +24,7 @@ class CitiesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderClass {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-        return ViewHolderClass(itemView)
+        return ViewHolderClass(onInteractionListener,itemView)
     }
 
     override fun onBindViewHolder(holder: ViewHolderClass, position: Int) {
@@ -36,6 +40,7 @@ class CitiesAdapter(
             .into(holder.rvIcon)
 
         holder.rvCity.text = currentItem.name
+        holder.rvMore.setOnClickListener {onInteractionListener.showCity(currentItem)}
         holder.rvCloud.text = currentItem.weather[0].description
         holder.rvTemperature.text = currentItem.main?.temp.toString() + " °C"
         holder.rvPressure.text = currentItem.main?.pressure.toString()
@@ -46,9 +51,10 @@ class CitiesAdapter(
         return dataList.size
     }
 
- class ViewHolderClass(itemView: View) : RecyclerView.ViewHolder(itemView) {
+ class ViewHolderClass(onInteractionListener: OnInteractionListener, itemView: View) : RecyclerView.ViewHolder(itemView) {
         val rContext = itemView.getContext()
         val rvCity: TextView = itemView.findViewById(R.id.city)
+        val rvMore: TextView = itemView.findViewById(R.id.rvMore)
         val rvIcon: ImageView = itemView.findViewById(R.id.imageView)
         val rvCloud: TextView = itemView.findViewById(R.id.cloud)
         val rvTemperature: TextView = itemView.findViewById(R.id.temp)

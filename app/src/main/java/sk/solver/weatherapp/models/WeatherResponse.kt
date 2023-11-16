@@ -1,5 +1,9 @@
 package sk.solver.weatherapp.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class WeatherResponse(
     var coord: Coord?  =null,
     var weather: List<Weather> = emptyList(),
@@ -14,4 +18,6 @@ data class WeatherResponse(
     var id: Int = 0,
     var name: String?  =null,
     var cod: Int = 0
-)
+): Parcelable
+
+
