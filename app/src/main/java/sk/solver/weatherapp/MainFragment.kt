@@ -13,19 +13,20 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import sk.solver.weatherapp.databinding.FragmentMainBinding
 import sk.solver.weatherapp.models.WeatherResponse
+import java.time.LocalTime
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.system.measureTimeMillis
+import kotlin.time.ExperimentalTime
+import kotlin.time.TimeSource
 
 
 class MainFragment : Fragment() {
@@ -34,9 +35,13 @@ class MainFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private var resultList: MutableList<WeatherResponse> = mutableListOf()
 
+    @OptIn(ExperimentalTime::class)
+    private var timeSource = TimeSource.Monotonic
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable("resultList", resultList)
+//
+//        outState.putParseable("state", ListWeather::class.java)
     }
 
     override fun onCreateView(
@@ -64,19 +69,20 @@ class MainFragment : Fragment() {
 
         binding.cityEditor.setOnKeyListener({ _, keyCode: Int, par ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && par.action == KeyEvent.ACTION_UP) {
-                val citiesList = loadCities()
-                resultList.clear()
-                lifecycleScope.launch {
+//                val elapsedTime = measureTimeMillis {
+                    val citiesList = loadCities()
+                    resultList.clear()
                     citiesList.forEachIndexed { ind, city ->
                         /** ind for test! **/
-                        launch {
+                        CoroutineScope(Dispatchers.IO).launch {
                             resultList.add(loadCity(city, ind).await())
                             withContext(Dispatchers.Main) {
                                 recyclerView.adapter?.notifyDataSetChanged()
                             }
                         }
                     }
-                }
+//                }
+//                System.out.println("********************* measureTime $elapsedTime")
             }
             false
         })
@@ -87,10 +93,11 @@ class MainFragment : Fragment() {
         return split(binding.cityEditor.text.toString(), ",").asList()
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun loadCity(city: String, ind: Int): LiveData<WeatherResponse> {
         /** ind for test! **/
         /** **/
-        val del = if (ind == 0) 2000L else 0L
+//        val del = if (ind == 0) 2000L else 0L
         val resultLivedata = MutableLiveData<WeatherResponse>()
         WeatherClientBuilder.create(WeatherClient::class.java)
             .getWeather(
@@ -100,12 +107,13 @@ class MainFragment : Fragment() {
             )
             /** for test! **/
             /** **/
-            .delay(del, TimeUnit.MILLISECONDS)
+//            .delay(del, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ weatherResponse: WeatherResponse ->
                 Toast.makeText(context, "Finished $city", Toast.LENGTH_LONG).show()
                 resultLivedata.value = weatherResponse
+//                System.out.println("********************** $city ${timeSource.markNow()}")
             }, { throwable: Throwable ->
                 val message =
                     if (throwable.message!!.contains("HTTP 404", true))
@@ -140,4 +148,4 @@ class MainFragment : Fragment() {
     }
 }
 
-private fun Parcelable.putParcelable(s: String, resultList: MutableList<WeatherResponse>) { }
+private fun Parcelable.putParcelable(s: String, resultList: MutableList<WeatherResponse>) {}

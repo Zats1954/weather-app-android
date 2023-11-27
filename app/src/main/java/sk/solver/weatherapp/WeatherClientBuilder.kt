@@ -27,7 +27,7 @@ object WeatherClientBuilder {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .callTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
+//                .addInterceptor(interceptor)
                 .build()
             val objectMapper = ObjectMapper()
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -41,7 +41,7 @@ object WeatherClientBuilder {
             return instance
         }
 
-    fun <T> create(serviceInterface: Class<T>?): T {
+    fun <T> create(serviceInterface: Class<T>): T {
         return builderInstance!!.create(serviceInterface)
     }
 }
